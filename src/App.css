@@ -1,0 +1,22 @@
+h3, h2 {
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .headlines h5 {
+    font-size: 1.1rem;
+  }
+  
+  .bg-light p {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+  }
+  
+  .card {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
