@@ -31,6 +31,7 @@ const AdminDashboard = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/articles/`);
       setArticles(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching articles:", error);
     } finally {
@@ -155,146 +156,156 @@ const AdminDashboard = () => {
 
   return (
     <div className="container mt-4">
-      <h1>Admin Dashboard</h1>
+      <h1 className="text-center mb-4">Admin Dashboard</h1>
       <div className="row">
         <div className="col-md-6">
-          <h2>{selectedArticle ? "Edit Article" : "Create Article"}</h2>
-          <form onSubmit={handleFormSubmit}>
-            <div className="mb-3">
-              <label className="form-label">Title</label>
-              <input
-                type="text"
-                className="form-control"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Content</label>
-              <textarea
-                className="form-control"
-                name="content"
-                value={formData.content}
-                onChange={handleInputChange}
-                rows="5"
-                required
-              ></textarea>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Category</label>
-              <select
-                className="form-select"
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select Category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Author</label>
-              <select
-                className="form-select"
-                name="author"
-                value={formData.author}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select Author</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.username}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Image</label>
-              <input
-                type="file"
-                className="form-control"
-                name="image"
-                onChange={handleFileChange}
-              />
-              {selectedArticle && selectedArticle.image && (
-                <div>
-                  <img
-                    src={selectedArticle.image}
-                    alt="article-preview"
-                    width="100"
-                    height="100"
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h2 className="card-title mb-4">
+                {selectedArticle ? "Edit Article" : "Create Article"}
+              </h2>
+              <form onSubmit={handleFormSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">Title</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    required
                   />
                 </div>
-              )}
+                <div className="mb-3">
+                  <label className="form-label">Content</label>
+                  <textarea
+                    className="form-control"
+                    name="content"
+                    value={formData.content}
+                    onChange={handleInputChange}
+                    rows="5"
+                    required
+                  ></textarea>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Category</label>
+                  <select
+                    className="form-select"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Author</label>
+                  <select
+                    className="form-select"
+                    name="author"
+                    value={formData.author}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select Author</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.username}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Image</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    name="image"
+                    onChange={handleFileChange}
+                  />
+                  {selectedArticle && selectedArticle.image && (
+                    <div>
+                      <img
+                        src={selectedArticle.image}
+                        alt="article-preview"
+                        width="100"
+                        height="100"
+                      />
+                    </div>
+                  )}
+                </div>
+                <button type="submit" className="btn btn-primary w-100">
+                  {selectedArticle ? "Update" : "Create"}
+                </button>
+                {selectedArticle && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary w-100 mt-2"
+                    onClick={() => {
+                      setSelectedArticle(null);
+                      setFormData({
+                        title: "",
+                        content: "",
+                        category: "",
+                        author: "",
+                        image: null,
+                      });
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </form>
             </div>
-            <button type="submit" className="btn btn-primary">
-              {selectedArticle ? "Update" : "Create"}
-            </button>
-            {selectedArticle && (
-              <button
-                type="button"
-                className="btn btn-secondary ms-2"
-                onClick={() => {
-                  setSelectedArticle(null);
-                  setFormData({
-                    title: "",
-                    content: "",
-                    category: "",
-                    author: "",
-                    image: null,
-                  });
-                }}
-              >
-                Cancel
-              </button>
-            )}
-          </form>
+          </div>
         </div>
         <div className="col-md-6">
-          <h2>Articles</h2>
-          {loading ? (
-            <p>Loading articles...</p>
-          ) : (
-            <ul className="list-group">
-              {articles.map((article) => (
-                <li
-                  key={article.id}
-                  className="list-group-item d-flex justify-content-between align-items-center"
-                >
-                  <div>
-                    <h5>{article.title}</h5>
-                    <p>{article.content.slice(0, 50)}...</p>
-                    <small>
-                      <strong>Author:</strong> {article.author.username} <br />
-                      <strong>Category:</strong> {article.category.name}
-                    </small>
-                  </div>
-                  <div>
-                    <button
-                      className="btn btn-sm btn-warning me-2"
-                      onClick={() => handleEdit(article)}
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h2 className="card-title">Articles</h2>
+              {loading ? (
+                <p>Loading articles...</p>
+              ) : (
+                <ul className="list-group">
+                  {articles.map((article) => (
+                    <li
+                      key={article.id}
+                      className="list-group-item d-flex justify-content-between align-items-center"
                     >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDelete(article.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                      <div>
+                        <h5>{article.title}</h5>
+                        <p>{article.content.slice(0, 50)}...</p>
+                        <small>
+                          <strong>Author:</strong> {article.author} <br />
+                          <strong>Category:</strong> {article.category}
+                        </small>
+                      </div>
+                      <div>
+                        <button
+                          className="btn btn-sm btn-warning me-2"
+                          onClick={() => handleEdit(article)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDelete(article.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
