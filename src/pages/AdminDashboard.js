@@ -62,7 +62,8 @@ const AdminDashboard = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
+    setImage(e.target.files[0]); // Store the image file in separate state
+    setFormData({ ...formData, image: e.target.files[0] }); // Add image to form data state
   };
 
   const handleFormSubmit = async (e) => {
@@ -86,6 +87,13 @@ const AdminDashboard = () => {
     formPayload.append("author", formData.author); // Send as ID
     if (formData.image && formData.image !== selectedArticle?.image) {
       formPayload.append("image", formData.image); // File upload
+    } else {
+      console.log("No image selected for upload.");
+    }
+
+    // Log formPayload before sending
+    for (let [key, value] of formPayload.entries()) {
+      console.log(`${key}:`, value);
     }
 
     try {
@@ -216,6 +224,16 @@ const AdminDashboard = () => {
                 name="image"
                 onChange={handleFileChange}
               />
+              {selectedArticle && selectedArticle.image && (
+                <div>
+                  <img
+                    src={selectedArticle.image}
+                    alt="article-preview"
+                    width="100"
+                    height="100"
+                  />
+                </div>
+              )}
             </div>
             <button type="submit" className="btn btn-primary">
               {selectedArticle ? "Update" : "Create"}
