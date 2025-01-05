@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const API_BASE_URL = "http://127.0.0.1:8000/api"; // Update to match your backend
+  const API_BASE_URL = "https://newswebsite-backend-d4ve.onrender.com/api";
 
   // Fetch articles, categories, and users
   useEffect(() => {
@@ -63,14 +63,13 @@ const AdminDashboard = () => {
   };
 
   const handleFileChange = (e) => {
-    setImage(e.target.files[0]); // Store the image file in separate state
-    setFormData({ ...formData, image: e.target.files[0] }); // Add image to form data state
+    setImage(e.target.files[0]); 
+    setFormData({ ...formData, image: e.target.files[0] }); 
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Ensure all required fields are present
     if (
       !formData.title ||
       !formData.content ||
