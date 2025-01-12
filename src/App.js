@@ -10,7 +10,7 @@ const App = () => {
     <Router>
       <Toaster />
       <Navbar />
-      <div className="container mt-4">
+      <div className="container mt-4 main-content">
         <AppRoutes />
       </div>
       <Footer />

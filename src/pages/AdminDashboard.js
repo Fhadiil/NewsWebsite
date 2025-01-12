@@ -13,25 +13,17 @@ const AdminDashboard = () => {
     image: null,
   });
   const [image, setImage] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [categories, setCategories] = useState({});
+  const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(false);
 
   const API_BASE_URL = "https://newswebsite-backend-d4ve.onrender.com/api";
-
-  // Fetch articles, categories, and users
-  useEffect(() => {
-    fetchArticles();
-    fetchCategories();
-    fetchUsers();
-  }, []);
 
   const fetchArticles = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${API_BASE_URL}/articles/`);
       setArticles(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching articles:", error);
     } finally {
@@ -42,7 +34,11 @@ const AdminDashboard = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/categories/`);
-      setCategories(response.data);
+      const categoryMap = response.data.reduce((acc, category) => {
+        acc[category.id] = category.name;
+        return acc;
+      }, {});
+      setCategories(categoryMap);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -51,11 +47,24 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/users/`);
-      setUsers(response.data);
+      const userMap = response.data.reduce((acc, user) => {
+        acc[user.id] = user.username;
+        return acc;
+      }, {});
+      setUsers(userMap);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([fetchArticles(), fetchCategories(), fetchUsers()]);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,13 +72,13 @@ const AdminDashboard = () => {
   };
 
   const handleFileChange = (e) => {
-    setImage(e.target.files[0]); 
-    setFormData({ ...formData, image: e.target.files[0] }); 
+    const file = e.target.files[0];
+    setImage(file);
+    setFormData({ ...formData, image: file });
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
     if (
       !formData.title ||
       !formData.content ||
@@ -81,37 +90,24 @@ const AdminDashboard = () => {
     }
 
     const formPayload = new FormData();
-    formPayload.append("title", formData.title);
-    formPayload.append("content", formData.content);
-    formPayload.append("category", formData.category); // Send as ID
-    formPayload.append("author", formData.author); // Send as ID
-    if (formData.image && formData.image !== selectedArticle?.image) {
-      formPayload.append("image", formData.image); // File upload
-    } else {
-      console.log("No image selected for upload.");
-    }
-
-    // Log formPayload before sending
-    for (let [key, value] of formPayload.entries()) {
-      console.log(`${key}:`, value);
-    }
+    Object.entries(formData).forEach(([key, value]) => {
+      formPayload.append(key, value);
+    });
 
     try {
-      let response;
       if (selectedArticle) {
-        // Update existing article
-        response = await axios.put(
+        await axios.put(
           `${API_BASE_URL}/articles/${selectedArticle.id}/`,
           formPayload,
-          { headers: { "Content-Type": "multipart/form-data" } }
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
         );
       } else {
-        // Create new article
-        response = await axios.post(`${API_BASE_URL}/articles/`, formPayload, {
+        await axios.post(`${API_BASE_URL}/articles/`, formPayload, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
-
       alert(`Article ${selectedArticle ? "updated" : "created"} successfully!`);
       setFormData({
         title: "",
@@ -124,10 +120,7 @@ const AdminDashboard = () => {
       fetchArticles();
     } catch (error) {
       console.error("Error saving article:", error);
-      if (error.response && error.response.data) {
-        console.error("Response data:", error.response.data);
-        alert("Failed to save article. Please check the input fields.");
-      }
+      alert("Failed to save article. Please check the input fields.");
     }
   };
 
@@ -136,8 +129,8 @@ const AdminDashboard = () => {
     setFormData({
       title: article.title,
       content: article.content,
-      category: article.category.id, // Use category ID
-      author: article.author.id, // Use author ID
+      category: article.category, // Use category ID
+      author: article.author, // Use author ID
       image: article.image, // Pre-fill image URL
     });
   };
@@ -164,6 +157,7 @@ const AdminDashboard = () => {
                 {selectedArticle ? "Edit Article" : "Create Article"}
               </h2>
               <form onSubmit={handleFormSubmit}>
+                {/* Title */}
                 <div className="mb-3">
                   <label className="form-label">Title</label>
                   <input
@@ -175,6 +169,8 @@ const AdminDashboard = () => {
                     required
                   />
                 </div>
+
+                {/* Content */}
                 <div className="mb-3">
                   <label className="form-label">Content</label>
                   <textarea
@@ -186,6 +182,8 @@ const AdminDashboard = () => {
                     required
                   ></textarea>
                 </div>
+
+                {/* Category */}
                 <div className="mb-3">
                   <label className="form-label">Category</label>
                   <select
@@ -196,13 +194,15 @@ const AdminDashboard = () => {
                     required
                   >
                     <option value="">Select Category</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
+                    {Object.entries(categories).map(([id, name]) => (
+                      <option key={id} value={id}>
+                        {name}
                       </option>
                     ))}
                   </select>
                 </div>
+
+                {/* Author */}
                 <div className="mb-3">
                   <label className="form-label">Author</label>
                   <select
@@ -213,13 +213,15 @@ const AdminDashboard = () => {
                     required
                   >
                     <option value="">Select Author</option>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.username}
+                    {Object.entries(users).map(([id, username]) => (
+                      <option key={id} value={id}>
+                        {username}
                       </option>
                     ))}
                   </select>
                 </div>
+
+                {/* Image */}
                 <div className="mb-3">
                   <label className="form-label">Image</label>
                   <input
@@ -239,23 +241,18 @@ const AdminDashboard = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Submit */}
                 <button type="submit" className="btn btn-primary w-100">
                   {selectedArticle ? "Update" : "Create"}
                 </button>
+
+                {/* Cancel */}
                 {selectedArticle && (
                   <button
                     type="button"
                     className="btn btn-secondary w-100 mt-2"
-                    onClick={() => {
-                      setSelectedArticle(null);
-                      setFormData({
-                        title: "",
-                        content: "",
-                        category: "",
-                        author: "",
-                        image: null,
-                      });
-                    }}
+                    onClick={() => setSelectedArticle(null)}
                   >
                     Cancel
                   </button>
@@ -264,6 +261,8 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Articles List */}
         <div className="col-md-6">
           <div className="card shadow-sm">
             <div className="card-body">
@@ -281,8 +280,10 @@ const AdminDashboard = () => {
                         <h5>{article.title}</h5>
                         <p>{article.content.slice(0, 50)}...</p>
                         <small>
-                          <strong>Author:</strong> {article.author} <br />
-                          <strong>Category:</strong> {article.category}
+                          <strong>Author:</strong>{" "}
+                          {users[article.author] || "Unknown"} <br />
+                          <strong>Category:</strong>{" "}
+                          {categories[article.category] || "Uncategorized"}
                         </small>
                       </div>
                       <div>

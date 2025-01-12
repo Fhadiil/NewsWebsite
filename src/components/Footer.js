@@ -1,18 +1,20 @@
-import React from 'react';
-import { Container, Row, Col, Nav } from 'react-bootstrap';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from "react";
+import { Container, Row, Col, Nav } from "react-bootstrap";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Footer = () => {
   return (
-    <div className="bg-light text-dark py-4">
+    <div className="bg-light text-dark py-4 footer">
       <Container>
         <Row>
           <Col md={4}>
             <h5 className="fw-bold">About Us</h5>
             <p className="text-muted">
-              We are The News, your go-to source for the latest news, articles, and updates from around the world. Stay informed with unbiased and in-depth reporting.
+              We are The News, your go-to source for the latest news, articles,
+              and updates from around the world. Stay informed with unbiased and
+              in-depth reporting.
             </p>
           </Col>
           <Col md={4}>
@@ -27,7 +29,7 @@ const Footer = () => {
             </Nav>
           </Col>
           <Col md={4}>
-            <h5 className="fw-bold">Follow US</h5>
+            <h5 className="fw-bold">Follow Us</h5>
             <div className="d-flex">
               <a href="https://facebook.com" className="text-dark me-2">
                 <FaFacebook size={24} />
