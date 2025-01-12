@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const Footer = () => {
   return (
-    <div className="bg-light text-dark py-4 footer">
+    <div className="bg-light text-dark py-5 footer">
       <Container>
         <Row>
           <Col md={4}>

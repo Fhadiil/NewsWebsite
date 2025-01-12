@@ -1,0 +1,34 @@
+/* Scoped styles for ArticleCard */
+.articleCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* Ensure all cards are the same height */
+  max-height: 400px; /* Optional: limit the maximum height */
+}
+
+.articleCardImg {
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+  width: 100%;
+  height: 200px; /* Fixed height for all images */
+  border-radius: 0.5rem;
+}
+
+.articleCardBody {
+  padding: 1rem; /* Add padding for better appearance */
+  flex-grow: 1; /* Ensure the content fills the card */
+}
+
+.articleCardTitle {
+  font-size: 1.25rem; /* Adjust font size for uniformity */
+  margin-bottom: 0.5rem;
+}
+
+.articleCardText {
+  font-size: 0.875rem; /* Adjust text size */
+  line-height: 1.4; /* Improve readability */
+}
+
+.articleCardLink {
+  color: var(--bs-primary); /* Use Bootstrap's primary color */
+}

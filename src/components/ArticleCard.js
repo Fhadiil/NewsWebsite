@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaClock, FaUser, FaShareAlt } from "react-icons/fa";
+import { FaClock, FaUser } from "react-icons/fa";
 import API from "../services/api";
+import styles from "./ArticleCard.module.css";
 
 const ArticleCard = ({ article }) => {
   const [categories, setCategories] = useState({});
@@ -11,12 +12,13 @@ const ArticleCard = ({ article }) => {
     fetchCategories();
     fetchAuthors();
   }, []);
+
   const fetchCategories = async () => {
     try {
       const response = await API.get("categories/");
       const categoryMap = {};
       response.data.forEach((ctg) => {
-        categoryMap[ctg.id] = `${ctg.name}`;
+        categoryMap[ctg.id] = ctg.name;
       });
       setCategories(categoryMap);
     } catch (error) {
@@ -28,30 +30,33 @@ const ArticleCard = ({ article }) => {
     try {
       const response = await API.get("users/");
       const authorMap = {};
-      console.log(response.data);
       response.data.forEach((auth) => {
-        authorMap[auth.id] = `${auth.username}`;
+        authorMap[auth.id] = auth.username;
       });
       setAuthors(authorMap);
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error("Error fetching authors:", error);
     }
   };
+
   const { title, content, image, created_at, id, category, author } = article;
 
   return (
-    <div className="card h-100 border-0">
-      <img src={image} alt={title} className="card-img-top rounded-3" />
+    <div className={`card h-100 border-0 ${styles.articleCard}`}>
+      <img
+        src={image}
+        alt={title}
+        className={`${styles.articleCardImg} card-img-top`}
+      />
 
-      <div className="card-body px-0">
+      <div className={`card-body px-0 ${styles.articleCardBody}`}>
         <span className="badge bg-info mb-2">
-          {/* Display the categoty name instead of the ID */}
           {category && categories[category]
             ? categories[category]
             : "No category assigned"}
         </span>
 
-        <h5 className="card-title fw-bold mb-2">{title}</h5>
+        <h5 className={`${styles.articleCardTitle} fw-bold mb-2`}>{title}</h5>
 
         <div className="d-flex text-muted small mb-2">
           <div className="me-3 d-flex align-items-center">
@@ -66,11 +71,13 @@ const ArticleCard = ({ article }) => {
           </div>
         </div>
 
-        <p className="card-text text-muted">{content.substring(0, 100)}...</p>
+        <p className={`${styles.articleCardText} text-muted`}>
+          {content.substring(0, 100)}...
+        </p>
 
         <Link
           to={`/article/${id}`}
-          className="stretched-link text-decoration-none"
+          className={`${styles.articleCardLink} stretched-link text-decoration-none mb-5`}
         >
           Read More
         </Link>
@@ -78,6 +85,7 @@ const ArticleCard = ({ article }) => {
     </div>
   );
 };
+
 const FeaturedArticleCard = ({ article }) => {
   const [categories, setCategories] = useState({});
   const [authors, setAuthors] = useState({});
@@ -148,7 +156,7 @@ const FeaturedArticleCard = ({ article }) => {
               </div>
               <div className="d-flex align-items-center">
                 <FaClock className="me-2" />
-                <span>{created_at}</span>
+                <span>{new Date(created_at).toLocaleDateString()}</span>
               </div>
             </div>
 
